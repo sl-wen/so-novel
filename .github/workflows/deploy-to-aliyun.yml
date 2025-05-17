@@ -53,6 +53,9 @@ jobs:
           source: "target/${{ env.DIST_DIRNAME }}"
           target: "/opt/so-novel/"
           strip_components: 2
+          timeout: 600s
+          rm: true
+          overwrite: true
 
       # 重启服务
       - name: Restart Service

@@ -1,0 +1,23 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: so-novel
+
+# 自定义配置
+app:
+  # 下载目录
+  download-dir: downloads
+  # 搜索结果限制
+  search-limit: 20
+  # 爬虫线程数
+  crawler-threads: 32
+  # 爬虫请求间隔(毫秒)
+  crawler-interval: 1000
+  # 爬虫超时时间(秒)
+  crawler-timeout: 30
+  # 语言转换，可选：简体中文(zh_CN)、繁体中文(zh_TW)
+  language: zh_CN
+  # 书源ID
+  source-id: 1

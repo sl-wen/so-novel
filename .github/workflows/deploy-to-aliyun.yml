@@ -1,0 +1,48 @@
+name: Deploy to Aliyun
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Build with Maven
+        run: mvn clean package
+
+      - name: Deploy to Aliyun
+        uses: appleboy/scp-action@v0.1.4
+        with:
+          host: '121.40.215.235'
+          username: 'root'
+          password: ${{ secrets.HOST_ALI }}
+          port: 22
+          source: "."
+          target: "/usr/share/nginx/html/"
+          script: |
+           cd /opt/so-novel
+           git pull origin main
+           mvn clean package
+           systemctl restart so-novel.service
+
+      # 部署后通知
+      - name: Deployment Status
+        if: always()
+        run: |
+          if [ ${{ job.status }} == 'success' ]; then
+            echo "✅ 部署成功！网站已更新。"
+          else
+            echo "❌ 部署失败，请检查日志获取详细信息。"
+          fi
+         

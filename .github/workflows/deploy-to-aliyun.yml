@@ -5,6 +5,12 @@ on:
     branches:
       - main
 
+env:
+  # JRE配置
+  JRE_FILENAME: jre-17.0.12+7_linux.tar.gz
+  JRE_DIRNAME: jdk-17.0.12+7-jre
+  DIST_DIRNAME: SoNovel-linux
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -18,9 +24,25 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
+      # Maven构建
       - name: Build with Maven
-        run: mvn clean package
+        run: |
+          mvn clean package -Plinux-x86_64 -Dmaven.test.skip=true -DjrePath=runtime
 
+      # 准备部署文件
+      - name: Prepare deployment files
+        run: |
+          mkdir -p target/${{ env.DIST_DIRNAME }}
+          cp config.ini bundle/readme.txt bundle/run-linux.sh bundle/${{ env.JRE_FILENAME }} target/${{ env.DIST_DIRNAME }}/
+          cp -r bundle/fonts target/${{ env.DIST_DIRNAME }}/
+          cd target
+          mv app-jar-with-dependencies.jar app.jar
+          cp app.jar ${{ env.DIST_DIRNAME }}/
+          cd ${{ env.DIST_DIRNAME }}
+          tar zxf ${{ env.JRE_FILENAME }} && rm ${{ env.JRE_FILENAME }}
+          mv ${{ env.JRE_DIRNAME }} runtime
+
+      # 部署到阿里云
       - name: Deploy to Aliyun
         uses: appleboy/scp-action@v0.1.4
         with:
@@ -28,20 +50,27 @@ jobs:
           username: 'root'
           password: ${{ secrets.HOST_ALI }}
           port: 22
-          source: "."
+          source: "target/${{ env.DIST_DIRNAME }}"
           target: "/opt/so-novel/"
-          script: |
-           cd /opt/so-novel
-           git pull origin main
-           mvn clean package
-           systemctl restart so-novel.service
+          strip_components: 2
 
-      # 部署后通知
+      # 重启服务
+      - name: Restart Service
+        uses: appleboy/ssh-action@master
+        with:
+          host: '121.40.215.235'
+          username: 'root'
+          password: ${{ secrets.HOST_ALI }}
+          port: 22
+          script: |
+            systemctl restart so-novel.service
+
+      # 部署状态通知
       - name: Deployment Status
         if: always()
         run: |
           if [ ${{ job.status }} == 'success' ]; then
-            echo "✅ 部署成功！网站已更新。"
+            echo "✅ 部署成功！服务已重启。"
           else
             echo "❌ 部署失败，请检查日志获取详细信息。"
           fi

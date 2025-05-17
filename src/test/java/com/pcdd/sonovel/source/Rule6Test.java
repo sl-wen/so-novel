@@ -17,7 +17,7 @@ import org.jsoup.Jsoup;
 import org.junit.jupiter.api.Test;
 
 import java.util.Map;
-import com.fasterxml.jackson.core.type.TypeReference;
+import cn.hutool.core.lang.TypeReference;
 
 /**
  * @author pcdd
@@ -47,7 +47,7 @@ class Rule6Test {
         JSONObject obj = JSONUtil.parseObj(param);
         System.out.println(JSONUtil.toJsonPrettyStr(obj));
 
-        Map<String, String> map = JSONUtil.toBean(param, new TypeReference<Map<String, String>>() {});
+        Map<String, String> map = JSONUtil.toBean(param, new TypeReference<Map<String, String>>() {}, false);
         HttpRequest req = HttpRequest
                 .get(ruleSearch.getUrl())
                 .header("Referer", ruleSearch.getUrl() + "search.html")

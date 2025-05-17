@@ -29,7 +29,7 @@ jobs:
           password: ${{ secrets.HOST_ALI }}
           port: 22
           source: "."
-          target: "/usr/share/nginx/html/"
+          target: "/opt/so-novel/"
           script: |
            cd /opt/so-novel
            git pull origin main

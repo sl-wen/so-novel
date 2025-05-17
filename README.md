@@ -79,8 +79,16 @@
 - **返回**:
   - `bookName`: 书名
   - `author`: 作者
-  - `source`: 来源
-  - `downloadUrl`: 下载链接
+  - `chapterCount`: 章节总数
+  - `latestChapter`: 最新章节
+  - `lastUpdateTime`: 最后更新时间
+  - `sourceId`: 书源ID
+  - `sourceName`: 书源名称
+  - `url`: 下载链接
+  - `intro`: 简介
+  - `category`: 分类
+  - `status`: 状态（连载/完结）
+  - `wordCount`: 字数
 
 #### 下载接口
 - **URL**: `/api/download`

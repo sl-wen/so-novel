@@ -56,6 +56,9 @@ jobs:
           timeout: 600s
           rm: true
           overwrite: true
+          command_timeout: 10m
+          use_insecure_cipher: false
+          debug: true
 
       # 重启服务
       - name: Restart Service
